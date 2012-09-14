@@ -75,8 +75,8 @@ public class MetadataPreprocessController {
 
 		//set up the directory to place the returned zip file in
 		ServletContext context = request.getSession().getServletContext();
-		logger.debug("contextpath: " + context.getContextPath());
-		String contextDir = context.getRealPath(context.getContextPath());
+		logger.debug("contextpath: " + request.getContextPath());
+		String contextDir = context.getRealPath(request.getContextPath());
 		logger.debug(contextDir);
 		File parentDir = new File(contextDir).getParentFile();
 		File currentDir = new File(parentDir, "resources/metadata");
