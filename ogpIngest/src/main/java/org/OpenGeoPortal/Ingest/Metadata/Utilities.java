@@ -246,63 +246,47 @@ public static Document handleFtname(Document metadataDocument, String filename){
 		return metadataDocument;
 }
 
+/**
+ * This ensures that contact info exists for both the distribution and metadata
+ * reference sections. No contact information is replaced. Local contact info
+ * is always added to any exisiting contacts in the distribution section.
+ *
+ * @param metadataDocument source document
+ * @param contactInfo local contact info
+ * @return modified source document
+ */
 public static Document setContactInfo(Document metadataDocument, ContactInfo contactInfo){
-		NodeList contactParents = metadataDocument.getElementsByTagName("cntinfo");
-		//replace existing distrib and metc cntinfo elements
-		Boolean distrib = false;
-		Boolean metc = false;
-		for (int i=0; i < contactParents.getLength(); i++){
-			Node currentContactParent = contactParents.item(i);
-			String currentContactParentName = currentContactParent.getParentNode().getNodeName();
-			if (currentContactParentName.equalsIgnoreCase("distrib")){
-				distrib = true;
-				currentContactParent.getParentNode().replaceChild(createContactFragment(metadataDocument, contactInfo), currentContactParent);
-			} else if (currentContactParentName.equalsIgnoreCase("metc")){
-				metc = true;
-				currentContactParent.getParentNode().replaceChild(createContactFragment(metadataDocument, contactInfo), currentContactParent);
-			}
-		}
+
+	NodeList metaContact = metadataDocument.getElementsByTagName("metc");
+
+	if (metaContact.getLength() == 0) {
 		
-		if (!distrib){
-			//distrib element does not exist
-			//check for expected distrib parent distinfo
- 		NodeList distInfoList = metadataDocument.getElementsByTagName("distinfo");
-			if (distInfoList.getLength() > 0){
-				//distinfo exists
-				Node distinfoNode = distInfoList.item(0);
-				
-				Node distribNode = metadataDocument.createElement("distrib");
-				distinfoNode.appendChild(distribNode);
-				distribNode.appendChild(createContactFragment(metadataDocument, contactInfo));
-			} else {
-				//distinfo doesn't exist...parent is <metadata>
-				Node rootNode = metadataDocument.getElementsByTagName("metadata").item(0);
-				
-				Node distinfoNode = metadataDocument.createElement("distinfo");
-				rootNode.appendChild(distinfoNode);
-				
-				Node distribNode = metadataDocument.createElement("distrib");
-				distinfoNode.appendChild(distribNode);
-				distribNode.appendChild(createContactFragment(metadataDocument, contactInfo));
-			}
-		}
+		NodeList metaInfoList = metadataDocument.getElementsByTagName("metainfo");
 		
-		if (!metc){
-			//metc element does not exist
-			//check for expected metc parent metainfo
- 		NodeList metaInfoList = metadataDocument.getElementsByTagName("metainfo");
-			if (metaInfoList.getLength() > 0){
-				//metainfo exists
-				Node metainfoNode = metaInfoList.item(0);
-				
-				Node metcNode = metadataDocument.createElement("metc");
-				metainfoNode.appendChild(metcNode);
-				metcNode.appendChild(createContactFragment(metadataDocument, contactInfo));
-			} else {
-				//probably can't recover from this
-			}
+		if (metaInfoList.getLength() > 0){
+
+			Node metainfoNode = metaInfoList.item(0);
+			Node metcNode = metadataDocument.createElement("metc");
+
+			metainfoNode.appendChild(metcNode);
+			metcNode.appendChild(createContactFragment(metadataDocument, contactInfo));
+		} else {
+			//probably can't recover from this
 		}
-		return metadataDocument;
+	}
+
+	Node rootNode = metadataDocument.getDocumentElement();
+	Node distinfoNode = metadataDocument.createElement("distinfo");
+
+	rootNode.appendChild(distinfoNode);
+
+	Node distribNode = metadataDocument.createElement("distrib");
+
+	distinfoNode.appendChild(distribNode);
+	distribNode.appendChild(createContactFragment(metadataDocument, contactInfo));
+
+
+	return metadataDocument;
 }
 
 public static Document handleOnlink (Document metadataDocument, String onlinkText){
