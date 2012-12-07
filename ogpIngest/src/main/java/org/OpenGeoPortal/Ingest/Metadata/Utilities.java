@@ -122,11 +122,6 @@ public class Utilities {
 		countryNode.setTextContent(contactInfo.getCountry());
 		cntaddrNode.appendChild(countryNode);
 
-		Node cntvoiceNode = metadataDocument.createElement("cntvoice");
-		cntvoiceNode.setTextContent(contactInfo.getContactPhone());
-		
-		cntInfoNode.appendChild(cntvoiceNode);
-		
 		Node cntemailNode = metadataDocument.createElement("cntemail");
 		cntemailNode.setTextContent(contactInfo.getContactEmail());
 		
