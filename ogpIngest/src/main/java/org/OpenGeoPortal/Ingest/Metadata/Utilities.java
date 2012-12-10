@@ -136,98 +136,70 @@ public class Utilities {
 	
 public static Document setAccessInfo(Document metadataDocument, String access, String institution, String accessConstraintsText, String constraintsText){
 	String restrictedText = "Restricted Access Online: Access granted to Licensee only. Available only to " + institution + " affiliates.";
-	String publicText = "Unrestricted Access Online";
-	Boolean isAccessText = false;
-	if (accessConstraintsText != null){
-		isAccessText = true;
-		accessConstraintsText = " " + accessConstraintsText.trim();
+	String publicText = "Unrestricted Access Online.";
+
+	accessConstraintsText = (accessConstraintsText != null) ?
+		accessConstraintsText.trim() : "";
+
+	if (access.equalsIgnoreCase("restricted")) {
+		accessConstraintsText = restrictedText + " " + accessConstraintsText;
+	} else {
+		accessConstraintsText = publicText + " " + accessConstraintsText;
 	}
-		Node accessConstNode = metadataDocument.getElementsByTagName("accconst").item(0);
-		//does this node exist?
-		if (accessConstNode == null){
-			//System.out.println("<accconst> does not exist...trying to create.");
-			Element newAccessConst = metadataDocument.createElement("accconst");
-			if (access.equalsIgnoreCase("restricted")){
-				if (isAccessText){
-					newAccessConst.appendChild(metadataDocument.createTextNode(restrictedText + accessConstraintsText));
-				} else {
-					newAccessConst.appendChild(metadataDocument.createTextNode(restrictedText));
-				}
-  		 	} else {
-  		 		if (isAccessText){
-  		 			newAccessConst.appendChild(metadataDocument.createTextNode(publicText + accessConstraintsText));
-  		 		} else {
-					newAccessConst.appendChild(metadataDocument.createTextNode(publicText));
-  		 		}
-  			}
-			
-			Node useConstNode = metadataDocument.getElementsByTagName("useconst").item(0);
-  		 	if (useConstNode != null){
-  		 		if (constraintsText != null){
-  		 			useConstNode.setTextContent(constraintsText);
-		 			//System.out.println("Attempting to insert before <useconst>...");
-  		 			useConstNode.getParentNode().insertBefore(newAccessConst, useConstNode);
-  		 		}
-  			} else {
-		 		System.out.println("Attempting to insert after <keywords>...");
-		 		NodeList keywordsNodeList = metadataDocument.getElementsByTagName("keywords");
-		 		Node keywordNode = keywordsNodeList.item(keywordsNodeList.getLength() - 1);
-		 		Node afterKeywordNode = keywordNode.getNextSibling();
-		 		afterKeywordNode.getParentNode().insertBefore(newAccessConst, afterKeywordNode);
-		 			
-  		 		if (constraintsText != null){
-  		 			Node newUseConstNode  = metadataDocument.createElement("useconst");
-  		 			newUseConstNode.setTextContent(constraintsText);
-  		 			afterKeywordNode.getParentNode().insertBefore(newUseConstNode, newAccessConst);
-  		 		}
-  			}
+
+	accessConstraintsText = accessConstraintsText.trim();
+
+	Node accessNode = metadataDocument.getElementsByTagName("accconst").item(0);
+
+	if (accessNode == null) {
+		Element accessElement = metadataDocument.createElement("accconst");
+
+		accessElement.appendChild(metadataDocument.createTextNode(
+			accessConstraintsText));
+
+		NodeList keywords = metadataDocument.getElementsByTagName("keywords");
+		Node keywordsNextSib = keywords.item(keywords.getLength() - 1).getNextSibling();
+		keywordsNextSib.getParentNode().insertBefore(accessElement, keywordsNextSib);
+
+	} else {
+		String accessText = accessNode.getTextContent().trim();
+		String newAccessText;
+
+		if (accessText.isEmpty() || accessText.equalsIgnoreCase("none")) {
+			newAccessText = accessConstraintsText;
 		} else {
-		 	if (constraintsText != null){
-		 		Node useConstNode = metadataDocument.getElementsByTagName("useconst").item(0);
-		 		if (useConstNode != null){
-		 			useConstNode.setTextContent(constraintsText);
-		 		} else {
-		 			Node newUseConstNode  = metadataDocument.createElement("useconst");
-		 			newUseConstNode.setTextContent(constraintsText);
-		 			accessConstNode.getParentNode().insertBefore(newUseConstNode, accessConstNode);
-		 		}
-		 	}
-			String accessConst = accessConstNode.getTextContent().trim();
-			if (access.equalsIgnoreCase("restricted")){
-				//after <keywords> before <useconst>
-				//<accconst>Restricted Access Online: Access granted to Licensee only. Available only to Tufts University affiliates.</accconst>
-				if (accessConst.isEmpty()||accessConst.equalsIgnoreCase("none")){
-					if (isAccessText){
-						accessConst = restrictedText + accessConstraintsText;
-					} else {
-						accessConst = restrictedText;
-					}
-				} else {
-					if (isAccessText){
-						accessConst = restrictedText + accessConstraintsText; 
-					} else {
-						accessConst = restrictedText + " " + accessConst; 
-					}
-				}
-			} else {
-				//<accconst>Unrestricted Access Online</accconst>
-				if (accessConst.isEmpty()||accessConst.equalsIgnoreCase("none")){
-					if (isAccessText){
-						accessConst = publicText + accessConstraintsText;
-					} else {
-						accessConst = publicText;
-					}
-				} else {
-					if (isAccessText){
-						accessConst = publicText + accessConstraintsText;
-					} else {
-						accessConst = publicText + " " + accessConst; 
-					}
-				}
+			newAccessText = accessConstraintsText + " " + accessText;
 		}
-		accessConstNode.setTextContent(accessConst);
+
+		accessNode.setTextContent(newAccessText.trim());
+	}
+
+	constraintsText = (constraintsText != null) ? constraintsText.trim() : "";
+
+	Node useNode = metadataDocument.getElementsByTagName("useconst").item(0);
+
+	if (useNode == null) {
+		Element useElement = metadataDocument.createElement("useconst");
+
+		useElement.appendChild(metadataDocument.createTextNode(constraintsText));
+
+		accessNode = metadataDocument.getElementsByTagName("accconst").item(0);
+		Node accessNextSib = accessNode.getNextSibling();
+		accessNextSib.getParentNode().insertBefore(useElement, accessNextSib);
+	} else {
+		String useText = useNode.getTextContent().trim();
+		String newUseText;
+
+		if (useText.isEmpty() || useText.equalsIgnoreCase("none")) {
+			newUseText = constraintsText;
+		} else {
+			newUseText = constraintsText + " " + useText;
 		}
-		return metadataDocument;
+
+		useNode.setTextContent(newUseText.trim());
+	}
+
+	return metadataDocument;
 }
 
 public static Document handleFtname(Document metadataDocument, String filename){
