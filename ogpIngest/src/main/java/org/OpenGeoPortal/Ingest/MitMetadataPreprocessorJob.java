@@ -312,6 +312,11 @@ public class MitMetadataPreprocessorJob implements MetadataPreprocessorJob, Runn
 		logger.info("Trying to adjust metadata...");
 			//document
 		try {
+			metadataDocument = Utilities.setStylesheet(metadataDocument);
+		} catch (Exception e) {
+			logger.error("stylesheet: " + e.getMessage());
+		}
+		try {
 			metadataDocument = Utilities.setAccessInfo(metadataDocument, access, institution, accessConstraintsText, constraintsText);
 		}catch(Exception e){
 			logger.error("accessinfo: " + e.getMessage());

@@ -13,6 +13,7 @@ import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.ProcessingInstruction;
 
 public class Utilities {
 	final static Logger logger = LoggerFactory.getLogger(Utilities.class.getName());
@@ -318,5 +319,14 @@ public static Document handleOnlink (Document metadataDocument, String onlinkTex
 	}
 	return metadataDocument;
 }
+
+	public static Document setStylesheet(Document doc) {
+		Element root = doc.getDocumentElement();
+		ProcessingInstruction stylesheet = doc.createProcessingInstruction(
+			"xml-stylesheet", "type=\"text/xsl\" href=\"fgdc.xml\"");
+		root.getParentNode().insertBefore(stylesheet, root);
+
+		return doc;
+	}
 	
 }
