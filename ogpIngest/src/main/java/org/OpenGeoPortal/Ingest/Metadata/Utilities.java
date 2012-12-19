@@ -136,7 +136,7 @@ public class Utilities {
 	}
 	
 public static Document setAccessInfo(Document metadataDocument, String access, String institution, String accessConstraintsText, String constraintsText){
-	String restrictedText = "Restricted Access Online: Access granted to Licensee only. Available only to " + institution + " affiliates.";
+	String restrictedText = "Restricted Access Online: Access granted to Licensee only. Available only to " + institution.toUpperCase() + " affiliates.";
 	String publicText = "Unrestricted Access Online.";
 
 	accessConstraintsText = (accessConstraintsText != null) ?
