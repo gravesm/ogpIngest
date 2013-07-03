@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.OpenGeoPortal.Solr.SolrClient;
 import org.OpenGeoPortal.Solr.SolrExchangeRecord;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class BasicRemoteSolrIngestJob implements RemoteSolrIngestJob, Runnable {
 	private void getSolrRecords() throws MalformedURLException{
 		ingestStatus = ingestStatusManager.getIngestStatus(jobId);
 		//the client for the external solr
-		CommonsHttpSolrServer solrCore = new CommonsHttpSolrServer(solrUrl);
+		HttpSolrServer solrCore = new HttpSolrServer(solrUrl);
 	
 		try{
 		int recordCount = 0;

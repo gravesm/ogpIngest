@@ -7,7 +7,7 @@ import org.OpenGeoPortal.Utilities.OgpLogger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrException;
@@ -22,14 +22,9 @@ public class SolrJClient implements SolrClient{
 	String solrUrl;
 	
 	public SolrJClient(String solrUrl) {
-		try {
-			this.solrUrl = solrUrl;
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			this.solrServer = solr;
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            this.solrUrl = solrUrl;
+            SolrServer solr = new HttpSolrServer(solrUrl);
+            this.solrServer = solr;
 	}
 	
 	public SolrServer getSolrServer(){
